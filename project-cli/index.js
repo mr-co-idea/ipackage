@@ -11,6 +11,8 @@ const main = async () => {
     await initIndex();
     await initMain();
     await initConfig();
+
+    console.info(chalk.greenBright('项目初始化成功😊'))
 }
 
 main();

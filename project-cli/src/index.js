@@ -99,7 +99,14 @@ const initConfig = async () => {
 
         writeFileSync(path.resolve('./config/index.js'), config.index, { encoding: 'utf-8' });
         ['base', 'dev', 'prod', 'loader'].forEach(item => {
-            writeFileSync(path.resolve(`./config/webpack.${item}.js`), JSON.stringify(config[item]).compile(), { encoding: 'utf-8' });
+            let data = 'module.exports = ';
+            if (item === 'loader') {
+                data += `mode => (${JSON.stringify(config[item], null, 4).compile()})`
+            } else {
+                data += JSON.stringify(config[item], null, 4).compile();
+            }
+
+            writeFileSync(path.resolve(`./config/webpack.${item}.js`), data, { encoding: 'utf-8' });
         })
 
         console.log(chalk.green('5. 生成配置文件成功'));

@@ -21,6 +21,7 @@ const config = {
 const dependence = `
 npm i @babel/preset-react -D
 npm i react -S
+npm i react-dom -S
 `
 
 module.exports ={

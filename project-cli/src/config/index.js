@@ -5,12 +5,13 @@ const { merge } = require('webpack-merge'),
     loader = require('./loader');
 
 const index = `
+const __import = require('@ipackage/import')(__dirname);
 const { merge } = require('webpack-merge');
 
-const base = require('./webpack.base'),
-    dev = require('./webpack.dev'),
-    prod = require('./webpack.prod'),
-    initModule = require('./webpack.loader');
+const base = __import('./webpack.base'),
+    dev = __import('./webpack.dev'),
+    prod = __import('./webpack.prod'),
+    initModule = __import('./webpack.loader');
 
 module.exports = function (env, argv) {
     const mode = env.NODE_ENV;

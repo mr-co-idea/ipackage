@@ -7,6 +7,6 @@ module.exports = {
         extensions: ['.js', '.less', '.css'],
     },
     plugins: [
-        "${new require('html-webpack-plugin')({ fileName: 'index.html', template: './public/index.html' })}",
+        "${new (require('html-webpack-plugin'))({ fileName: 'index.html', template: './public/index.html' })}",
     ]
 }

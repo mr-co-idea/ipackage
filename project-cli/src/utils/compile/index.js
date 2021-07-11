@@ -1,4 +1,4 @@
-const reg = /"\$\{(.+)\}"/ // 存在问题需要修复
+const reg = /"\$\{(.+)\}"/g // 存在问题需要修复
 
 const initialCompile = String => {
     String.prototype.compile = function (callback = $ => $) {

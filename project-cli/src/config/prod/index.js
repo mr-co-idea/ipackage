@@ -20,6 +20,6 @@ module.exports = {
     },
     plugins: [
         "${new require('clean-webpack-plugin')}",
-        "${new require('mini-css-extract-plugin')({filename: 'css/[name].[hash:5].css'})}",
+        "${new (require('mini-css-extract-plugin'))({filename: 'css/[name].[hash:5].css'})}",
     ]
 }

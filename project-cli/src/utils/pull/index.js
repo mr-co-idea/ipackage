@@ -2,7 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 const pull = dirname => file => {
-    const string = fs.readFileSync(path.join(dirname, file + '/index.js'), { encoding: 'utf-8' });
+    if (!/.+\.js$/.test(file)) file += '/index.js';
+    const string = fs.readFileSync(path.join(dirname, file), { encoding: 'utf-8' });
     return eval(string);
 }
 
