@@ -1,10 +1,10 @@
 const { runShell } = require('./shell'),
     { compile, initialCompile } = require('./compile'),
-    { pull } = require('./pull');
+    { copy } = require('./copy');
 
 module.exports = {
     runShell,
     compile,
     initialCompile,
-    pull,
+    copy,
 }

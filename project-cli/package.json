@@ -15,8 +15,5 @@
   "dependencies": {
     "chalk": "^4.1.1",
     "webpack-merge": "^5.8.0"
-  },
-  "devDependencies": {
-    "@ipackage/import": "^1.1.0"
   }
 }

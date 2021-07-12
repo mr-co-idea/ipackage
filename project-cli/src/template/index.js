@@ -1,6 +1,4 @@
-const __import = require('@ipackages/import')(__dirname);
-
-const react = __import('./react');
+const react = require('./react');
 
 module.exports = {
     react,

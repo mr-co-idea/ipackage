@@ -5,17 +5,14 @@ const { merge } = require('webpack-merge'),
     loader = require('./loader');
 
 const index = `
-const __import = require('@ipackage/import')(__dirname);
 const { merge } = require('webpack-merge');
 
-const base = __import('./webpack.base'),
-    dev = __import('./webpack.dev'),
-    prod = __import('./webpack.prod'),
-    initModule = __import('./webpack.loader');
+const base = require('./webpack.base'),
+    initModule = require('./webpack.loader');
 
 module.exports = function (env, argv) {
     const mode = env.NODE_ENV;
-    const config = mode === 'production' ? prod : dev;
+    const config = mode === 'production' ? require('./webpack.prod') : require('./webpack.dev');
     return merge(base, config, initModule(mode), { mode });
 };
 `
