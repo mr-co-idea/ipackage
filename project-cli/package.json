@@ -13,7 +13,6 @@
     "create-app": "./index.js"
   },
   "dependencies": {
-    "chalk": "^4.1.1",
-    "webpack-merge": "^5.8.0"
+    "chalk": "^4.1.1"
   }
 }

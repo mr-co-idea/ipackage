@@ -1,19 +1,21 @@
-const { runShell, initialCompile, copy } = require('./utils');
+const { initialCompile, copy, merge, clear } = require('./utils');
 const path = require('path');
-const { writeFileSync, readFileSync, mkdirSync } = require('fs');
+const { writeFileSync, readFileSync, mkdirSync, existsSync, read } = require('fs');
 const chalk = require('chalk');
-const { generateDependence } = require('./packages');
+const readline = require('readline');
+const { dependencies, devDependencies } = require('./packages');
 const { generateConfig } = require('./config');
 
 initialCompile(String);
 
-const $temp = process.env.TEMPLATE || 'react';
-const $app = process.env.APP || 'app';
+const $temp = process.env.TEMPLATE;
+const $app = process.env.APP;
 
 const {
     index: __index,
     config: __config,
-    dependence: __dependence,
+    dependencies: __dependencies,
+    devDependencies: __devDependencies,
 } = require(`./template/${$temp}`)
 
 /**
@@ -21,37 +23,48 @@ const {
  */
 const initialProject = async () => {
     try {
-        await runShell(`npm init -y`);
+        let projectPath = path.resolve($app);
 
-        const __path = path.resolve('./package.json');
+        if (existsSync(projectPath)) {
+            const ls = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout,
+            });
 
-        const val = readFileSync(__path, { encoding: 'utf-8' });
-        const config = JSON.parse(val);
+            const aws = await new Promise((resolve, reject) => ls.question(`${chalk.green('是否删除此文件？')} ${chalk.red('Y')} or N\n`,resolve));
 
-        config.scripts = {
-            build: `webpack --env NODE_ENV=production --config ./config`,
-            dev: `webpack serve --env NODE_ENV=development --config ./config`,
+            if (aws.toUpperCase() === 'Y') {
+                clear(path.resolve($app));
+            } else {
+                ls.close();
+                console.info(chalk.gray('创建项目已取消 ❎'))
+                process.exit(0);
+            }
+
+            // throw new Error('当前目录下存在同名文件，请更改后再重试');
         }
 
-        writeFileSync(__path, JSON.stringify(config, null, 4));
+        mkdirSync(projectPath);
+
+        const package = {
+            name: $app,
+            version: '0.0.1',
+            description: '',
+            main: 'index.js',
+            scripts: {
+                build: `webpack --env NODE_ENV=production --config ./config`,
+                dev: `webpack serve --env NODE_ENV=development --config ./config`,
+            },
+            dependencies: merge(dependencies, __dependencies),
+            devDependencies: merge(devDependencies, __devDependencies),
+        }
+
+        const __path = path.resolve($app, 'package.json');
+
+        writeFileSync(__path, JSON.stringify(package, null, 4));
         console.log(chalk.green('1. 项目初始化成功 ✅'))
     } catch (err) {
         console.log(chalk.red('项目初始化异常：'), chalk.yellow(err), ' ❗️');
-        process.exit(0);
-    }
-}
-
-
-/**
- * 安装依赖
- */
-const initDependence = async () => {
-    try {
-        const dep = await generateDependence(__dependence);
-        await runShell(dep);
-        console.log(chalk.green('2. 依赖安装成功 ✅'))
-    } catch (err) {
-        console.log(chalk.red('依赖安装异常：'), chalk.yellow(err), ' ❗️');
         process.exit(0);
     }
 }
@@ -62,8 +75,8 @@ const initDependence = async () => {
 const initIndex = async () => {
     const index = __index || `document.getElementById('root').innerHTML = '<h1>app</h1>'`;
     try {
-        writeFileSync(path.resolve('./index.js'), index, { encoding: 'utf-8' });
-        console.log(chalk.green('3. 生成主文件成功 ✅'))
+        writeFileSync(path.resolve($app, 'index.js'), index, { encoding: 'utf-8' });
+        console.log(chalk.green('2. 生成主文件成功 ✅'))
     } catch (err) {
         console.log(chalk.red('生成主文件异常：'), chalk.yellow(err), ' ❗️');
         process.exit(0);
@@ -78,9 +91,9 @@ const initMain = async () => {
         const html = readFileSync(path.join(__dirname, './public/index.html'), { encoding: 'utf-8' });
         const data = html.compile($app);
 
-        mkdirSync(path.resolve('./public'));
-        writeFileSync(path.resolve('./public/index.html'), data, { encoding: 'utf-8' });
-        console.log(chalk.green('4. 生成公共文件成功 ✅'));
+        mkdirSync(path.resolve($app, './public'));
+        writeFileSync(path.resolve($app, './public/index.html'), data, { encoding: 'utf-8' });
+        console.log(chalk.green('3. 生成公共文件成功 ✅'));
     } catch (err) {
         console.log(chalk.red('生成公共文件异常：'), chalk.yellow(err), ' ❗️');
         process.exit(0);
@@ -94,9 +107,9 @@ const initConfig = async () => {
     try {
         const config = generateConfig(__config);
 
-        mkdirSync(path.resolve('./config'));
+        mkdirSync(path.resolve($app, './config'));
 
-        writeFileSync(path.resolve('./config/index.js'), config.index, { encoding: 'utf-8' });
+        writeFileSync(path.resolve($app, './config/index.js'), config.index, { encoding: 'utf-8' });
         ['base', 'dev', 'prod', 'loader'].forEach(item => {
             let data = 'module.exports = ';
             if (item === 'loader') {
@@ -105,10 +118,10 @@ const initConfig = async () => {
                 data += JSON.stringify(config[item], null, 4).compile();
             }
 
-            writeFileSync(path.resolve(`./config/webpack.${item}.js`), data, { encoding: 'utf-8' });
+            writeFileSync(path.resolve($app, `./config/webpack.${item}.js`), data, { encoding: 'utf-8' });
         })
 
-        console.log(chalk.green('5. 生成配置文件成功 ✅'));
+        console.log(chalk.green('4. 生成配置文件成功 ✅'));
     } catch (err) {
         console.log(chalk.red('生成配置文件异常：'), chalk.yellow(err), ' ❗️');
         process.exit(0);
@@ -120,8 +133,8 @@ const initConfig = async () => {
  */
 const initSrc = async () => {
     try {
-        copy(path.join(__dirname, 'template', $temp, 'src'), path.resolve('./src'));
-        console.log(chalk.green('6. 生成src文件文件成功 ✅'));
+        copy(path.join(__dirname, 'template', $temp, 'src'), path.resolve($app, './src'));
+        console.log(chalk.green('5. 生成src文件文件成功 ✅'));
     } catch (err) {
         console.log(chalk.red('src文件异常：'), chalk.yellow(err), ' ❗️');
         process.exit(0);
@@ -133,7 +146,6 @@ const initSrc = async () => {
 
 module.exports = {
     initialProject,
-    initDependence,
     initIndex,
     initMain,
     initConfig,

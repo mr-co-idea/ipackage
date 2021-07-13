@@ -1,31 +1,25 @@
-const index = `
-import React from 'react'
-import ReactDOM from 'react-dom'
-import Index from './src';
-
-ReactDOM.render(
-  React.createElement(Index),
-  document.getElementById('root'),
-)
-`
-const config = {
-    react: {
+module.exports = {
+    index: `
+    import React from 'react'
+    import ReactDOM from 'react-dom'
+    import Index from './src';
+    
+    ReactDOM.render(
+      React.createElement(Index),
+      document.getElementById('root'),
+    )
+    `,
+    config: {
         base: {
             resolve: {
                 extensions: ['.jsx'],
             },
         }
+    },
+    dependencies: {
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2"
+    },
+    devDependencies: {
     }
-}
-
-const dependence = `
-npm i @babel/preset-react -D
-npm i react -S
-npm i react-dom -S
-`
-
-module.exports ={
-    index,
-    config,
-    dependence,
 }

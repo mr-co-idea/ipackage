@@ -1,4 +1,4 @@
-const { merge } = require('webpack-merge'),
+const { merge } = require('../utils'),
     base = require('./base'),
     dev = require('./dev'),
     prod = require('./prod'),
