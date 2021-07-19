@@ -1,0 +1,16 @@
+{
+  "name": "@ipackage/merge",
+  "version": "1.0.4",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./test"
+  },
+  "keywords": [],
+  "author": "Coles",
+  "license": "ISC",
+  "dependencies": {
+    "@ipackage/clone": "^1.1.1",
+    "@ipackage/judge": "^1.0.0"
+  }
+}
