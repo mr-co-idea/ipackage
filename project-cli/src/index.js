@@ -1,4 +1,5 @@
-const { initialCompile, copy, merge, clear } = require('./utils');
+const { initialCompile, copy, clear } = require('./utils');
+const { merge } = require('@ipackage/merge')
 const path = require('path');
 const { writeFileSync, readFileSync, mkdirSync, existsSync, read } = require('fs');
 const chalk = require('chalk');
@@ -8,7 +9,7 @@ const { generateConfig } = require('./config');
 
 initialCompile(String);
 
-const $temp = process.env.TEMPLATE;
+const $temp = process.env.TEMPLATE.replace(/_.+$/, '');
 const $app = process.env.APP;
 
 const {
@@ -31,15 +32,16 @@ const initialProject = async () => {
                 output: process.stdout,
             });
 
-            const aws = await new Promise((resolve, reject) => ls.question(`${chalk.green('是否删除此文件？')} ${chalk.red('Y')} or N\n`,resolve));
+            const aws = await new Promise((resolve, reject) => ls.question(`${chalk.green('是否删除此文件？')} ${chalk.red('Y')} or N\n`, resolve));
 
             if (aws.toUpperCase() === 'Y') {
                 clear(path.resolve($app));
+
             } else {
-                ls.close();
                 console.info(chalk.gray('创建项目已取消 ❎'))
                 process.exit(0);
             }
+            ls.close();
 
             // throw new Error('当前目录下存在同名文件，请更改后再重试');
         }
@@ -106,7 +108,6 @@ const initMain = async () => {
 const initConfig = async () => {
     try {
         const config = generateConfig(__config);
-
         mkdirSync(path.resolve($app, './config'));
 
         writeFileSync(path.resolve($app, './config/index.js'), config.index, { encoding: 'utf-8' });

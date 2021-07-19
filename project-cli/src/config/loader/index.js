@@ -8,9 +8,9 @@ module.exports = {
                 options: {
                     presets: [
                         '@babel/preset-env',
-                        '@babel/preset-react',
                     ]
-                }
+                },
+                [Symbol.for('key')]: '.jsx'
             },
             {
                 test: "${/\.html$/}",
@@ -28,7 +28,14 @@ module.exports = {
                 use: [
                     "${mode === 'production' ? require('mini-css-extract-plugin').loader : 'style-loader'}",
                     "css-loader",
-                    "less-loader"
+                    {
+                        loader: "less-loader",
+                        options: {
+                            lessOptions: {
+                                javascriptEnabled: true,
+                            }
+                        }
+                    },
                 ]
             },
         ]

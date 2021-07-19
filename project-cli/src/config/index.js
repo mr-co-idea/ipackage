@@ -1,11 +1,14 @@
-const { merge } = require('../utils'),
-    base = require('./base'),
+const base = require('./base'),
     dev = require('./dev'),
     prod = require('./prod'),
     loader = require('./loader');
 
+const { deepMerge } = require('@ipackage/merge')
+
+const merge = deepMerge(Symbol.for('key'));
+
 const index = `
-const { merge } = require('webpack-merge');
+const { merge } = require('@ipackage/merge');
 
 const base = require('./webpack.base'),
     initModule = require('./webpack.loader');

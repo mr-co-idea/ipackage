@@ -18,6 +18,6 @@ module.exports = {
         "webpack": "^5.44.0",
         "webpack-cli": "^4.7.2",
         "webpack-dev-server": "^3.11.2",
-        "webpack-merge": "^5.8.0"
+        "@ipackage/merge": "^1.0.4",
     }
 }
